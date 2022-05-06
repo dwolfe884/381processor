@@ -1,0 +1,90 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity r_MEMWB is
+  generic(Ns : integer := 32);
+  port(i_dmem       : in std_logic_vector(Ns-1  downto 0);
+       i_forward    : in std_logic_vector(Ns-1 downto 0);
+       i_aluout	    : in std_logic_vector(Ns-1 downto 0);
+       i_nextpc     : in std_logic_vector(Ns-1 downto 0);
+       i_rdrtmux    : in std_logic_vector(4 downto 0);
+       i_halt	    : in std_logic;
+       i_CLK        : in std_logic;
+       i_RST        : in std_logic;
+       i_WB	    : in std_logic_vector(2 downto 0);
+       o_dmem       : out std_logic_vector(Ns-1  downto 0);
+       o_forward    : out std_logic_vector(Ns-1  downto 0);
+       o_aluout	    : out std_logic_vector(Ns-1 downto 0);
+       o_nextpc     : out std_logic_vector(Ns-1 downto 0);
+       o_rdrtmux    : out std_logic_vector(4 downto 0);
+       o_WB	    : out std_logic_vector(2 downto 0);
+       o_halt	    : out std_logic);
+end r_MEMWB;
+
+architecture behavior of r_MEMWB is
+
+  component register_n
+    generic(N : integer := 32);
+    port(i_CLK        : in std_logic;     -- Clock input
+         i_RST        : in std_logic;     -- Reset input
+         i_WE         : in std_logic;     -- Write enable input
+         i_D          : in std_logic_vector(N-1 downto 0);     -- Data value input
+         o_Q          : out std_logic_vector(N-1 downto 0));   -- Data value output
+  end component;
+  component dffg
+    port(i_CLK        : in std_logic;     -- Clock input
+         i_RST        : in std_logic;     -- Reset input
+         i_WE         : in std_logic;     -- Write enable input
+         i_D          : in std_logic;     -- Data value input
+         o_Q          : out std_logic);   -- Data value output
+  end component;
+
+begin
+
+  RDRTreg: register_n
+  generic map(N => 5) 
+  port map(i_CLK => i_CLK, 
+           i_RST => i_RST,
+           i_WE  => '1',
+           i_D   => i_rdrtmux,
+           o_Q   => o_rdrtmux);
+  ALUreg: register_n 
+  port map(i_CLK => i_CLK, 
+           i_RST => i_RST,
+           i_WE  => '1',
+           i_D   => i_aluout,
+           o_Q   => o_aluout);
+  DMem: register_n 
+  port map(i_CLK => i_CLK, 
+           i_RST => i_RST,
+           i_WE  => '1',
+           i_D   => i_dmem,
+           o_Q   => o_dmem);
+  Forward: register_n 
+  port map(i_CLK => i_CLK, 
+           i_RST => i_RST,
+	   i_WE  => '1',
+           i_D   => i_forward,
+           o_Q   => o_forward);
+  nextPCReg: register_n 
+  port map(i_CLK => i_CLK, 
+           i_RST => i_RST,
+	   i_WE  => '1',
+           i_D   => i_nextpc,
+           o_Q   => o_nextpc);
+  WBreg: register_n 
+  generic map(N => 3)
+  port map(i_CLK => i_CLK, 
+           i_RST => i_RST,
+	   i_WE  => '1',
+           i_D   => i_WB,
+           o_Q   => o_WB);
+  halt_Reg : dffg
+  port map(
+      i_CLK   => i_CLK,
+      i_RST   => i_RST,
+      i_WE    => '1',
+      i_D     => i_halt,
+      o_Q     => o_halt);
+  
+end behavior;

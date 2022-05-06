@@ -1,0 +1,205 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity r_IDEX is
+  generic(Ns : integer := 32);
+  port(
+        i_WB		: in std_logic_vector(3 downto 0);
+        i_MEM		: in std_logic_vector(2 downto 0);
+        i_EX	        : in std_logic_vector(5 downto 0);
+        i_halt		: in std_logic;
+	i_flush		: in std_logic;
+	i_stall		: in std_logic;
+        i_reg1out    	: in std_logic_vector(Ns-1  downto 0);
+        i_reg2out    	: in std_logic_vector(Ns-1  downto 0);
+	i_nextpc	: in std_logic_vector(Ns-1 downto 0);
+        i_inst       	: in std_logic_vector(Ns-1  downto 0);
+        i_signExt    	: in std_logic_vector(Ns-1  downto 0);
+	i_regwriteaddr  : in std_logic_vector(5-1 downto 0);
+	i_jrmuxout	: in std_logic_vector(Ns-1 downto 0);
+	i_memreadwrite  : in std_logic;
+        i_CLK        	: in std_logic;
+        i_RST        	: in std_logic;
+
+        o_WBSig      	: out std_logic_vector(3 downto 0);
+        o_MEMSig     	: out std_logic_vector(2 downto 0);
+        o_EX	     	: out std_logic_vector(5 downto 0);
+	o_reg1out    	: out std_logic_vector(Ns-1 downto 0);
+	o_reg2out    	: out std_logic_vector(Ns-1 downto 0);
+        o_RegRs      	: out std_logic_vector(5-1  downto 0);
+	o_nextpc	: out std_logic_vector(Ns-1 downto 0);
+        o_RegRt     	: out std_logic_vector(5-1  downto 0);
+        o_signExt       : out std_logic_vector(Ns-1 downto 0);
+        o_RegRd      	: out std_logic_vector(5-1  downto 0);
+	o_regwriteaddr  : out std_logic_vector(5-1 downto 0);
+        o_inst       	: out std_logic_vector(Ns-1  downto 0);
+	o_jrmuxout	: out std_logic_vector(Ns-1 downto 0);
+	o_memreadwrite  : out std_logic;
+        o_halt		: out std_logic);
+        
+
+end r_IDEX;
+
+architecture behavior of r_IDEX is
+  signal tmp_we, tmp_halt : std_logic;
+  signal tmp_D, tmp_signExt, tmp_reg1out, tmp_reg2out, tmp_nextpc, tmp_jrmuxout : std_logic_vector(31 downto 0);
+  signal tmp_rs,tmp_rt,tmp_rd, tmp_regwriteaddr : std_logic_vector(4 downto 0);
+  signal tmp_WB : std_logic_vector(3 downto 0);
+  signal tmp_EX : std_logic_vector(5 downto 0);
+  signal tmp_MEM : std_logic_vector(2 downto 0);
+
+  component register_n
+    generic(N : integer := 32);
+    port(i_CLK        : in std_logic;     -- Clock input
+         i_RST        : in std_logic;     -- Reset input
+         i_WE         : in std_logic;     -- Write enable input
+         i_D          : in std_logic_vector(N-1 downto 0);     -- Data value input
+         o_Q          : out std_logic_vector(N-1 downto 0));   -- Data value output
+  end component;
+
+  component dffg
+    port(
+        i_CLK        : in std_logic;     -- Clock input
+        i_RST        : in std_logic;     -- Reset input
+        i_WE         : in std_logic;     -- Write enable input
+        i_D          : in std_logic;     -- Data value input
+        o_Q          : out std_logic);
+  end component;
+
+begin
+
+  tmp_we <= ((i_stall) or not(i_flush));
+  tmp_D <= i_inst when (i_flush='1') else x"00000000";
+  tmp_signExt <= i_signExt when (i_flush='1') else x"00000000";
+  tmp_WB <= i_WB when (i_flush='1') else "0000";
+  tmp_MEM <= i_MEM when (i_flush='1') else "000";
+  tmp_EX <= i_EX when (i_flush='1') else "000000";
+  tmp_reg1out <= i_reg1out when (i_flush='1') else x"00000000";
+  tmp_reg2out <= i_reg2out when (i_flush='1') else x"00000000";
+  tmp_rs <= i_inst(25 downto 21) when (i_flush='1') else "00000"; 
+  tmp_rt <= i_inst(20 downto 16) when (i_flush='1') else "00000";
+  tmp_rd <= i_inst(15 downto 11) when (i_flush='1') else "00000";
+  tmp_regwriteaddr <= i_regwriteaddr when (i_flush='1') else "00000";
+  tmp_nextpc <= i_nextpc when (i_flush='1') else x"00000000";
+  tmp_jrmuxout <= i_jrmuxout when (i_flush='1') else x"00000000";
+  tmp_halt <= i_halt when (i_flush='1') else '0';
+  tmp_memreadwrite <= i_memreadwrite when (i_flush='1') else  '1';
+  ImmReg: register_n
+  generic map(N => 32)
+  port map(
+    i_CLK   => i_CLK,
+    i_RST   => i_RST,
+    i_WE    => tmp_we,
+    i_D     => i_signExt,
+    o_Q     => o_signExt);
+  WB_Reg: register_n
+  generic map(N => 4)
+  port map(
+    i_CLK   => i_CLK,
+    i_RST   => i_RST,
+    i_WE    => tmp_we,
+    i_D     => i_WB,
+    o_Q     => o_WBSig);
+  MEM_Reg: register_n
+  generic map(N => 3)
+  port map(
+    i_CLK   => i_CLK,
+    i_RST   => i_RST,
+    i_WE    => tmp_we,
+    i_D     => i_MEM,
+    o_Q     => o_MEMSig);
+  EX_Reg: register_n
+  generic map(N => 6)
+  port map(
+    i_CLK   => i_CLK,
+    i_RST   => i_RST,
+    i_WE    => tmp_we,
+    i_D     => i_EX,
+    o_Q     => o_EX);
+  reg1_Reg : register_n
+  generic map(N => 32)
+  port map(
+    i_CLK   => i_CLK,
+    i_RST   => i_RST,
+    i_WE    => tmp_we,
+    i_D     => i_reg1out,
+    o_Q     => o_reg1out);
+  reg2_Reg : register_n
+  generic map(N => 32)
+  port map(
+    i_CLK   => i_CLK,
+    i_RST   => i_RST,
+    i_WE    => tmp_we,
+    i_D     => i_reg2out,
+    o_Q     => o_reg2out);
+  Rs_Reg : register_n
+  generic map(N => 5)
+  port map(
+    i_CLK   => i_CLK,
+    i_RST   => i_RST,
+    i_WE    => tmp_we,
+    i_D     => tmp_rs,
+    o_Q     => o_RegRs);
+  Rt_Reg : register_n
+  generic map(N => 5)
+  port map(
+      i_CLK   => i_CLK,
+      i_RST   => i_RST,
+      i_WE    => tmp_we,
+      i_D     => tmp_rt,
+      o_Q     => o_RegRt);
+  Rd_Reg : register_n
+  generic map(N => 5)
+  port map(
+      i_CLK   => i_CLK,
+      i_RST   => i_RST,
+      i_WE    => tmp_we,
+      i_D     => tmp_rd,
+      o_Q     => o_RegRd);
+  writeAddr_Reg : register_n
+  generic map(N => 5)
+  port map(
+      i_CLK   => i_CLK,
+      i_RST   => i_RST,
+      i_WE    => tmp_we,
+      i_D     => tmp_regwriteaddr,
+      o_Q     => o_regwriteaddr);
+  nextpc_Reg : register_n
+  port map(
+      i_CLK   => i_CLK,
+      i_RST   => i_RST,
+      i_WE    => tmp_we,
+      i_D     => tmp_nextpc,
+      o_Q     => o_nextpc);
+  inst_Reg : register_n
+  port map(
+      i_CLK   => i_CLK,
+      i_RST   => i_RST,
+      i_WE    => tmp_we,
+      i_D     => tmp_D,
+      o_Q     => o_inst);
+  jrmux_Reg : register_n
+  port map(
+      i_CLK   => i_CLK,
+      i_RST   => i_RST,
+      i_WE    => tmp_we,
+      i_D     => tmp_jrmuxout,
+      o_Q     => o_jrmuxout);
+  halt_Reg : dffg
+  port map(
+      i_CLK   => i_CLK,
+      i_RST   => i_RST,
+      i_WE    => tmp_we,
+      i_D     => tmp_halt,
+      o_Q     => o_halt);
+  memreadwrite_Reg : dffg
+  port map(
+      i_CLK   => i_CLK,
+      i_RST   => i_RST,
+      i_WE    => tmp_we,
+      i_D     => tmp_memreadwrite,
+      o_Q     => o_memreadwrite);
+  
+    
+  
+end behavior;

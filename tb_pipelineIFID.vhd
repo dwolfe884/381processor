@@ -1,0 +1,77 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity tb_pipelineIFID is
+  generic(N : integer := 32;
+          gCLK_HPER   : time := 50 ns);
+end tb_pipelineIFID;
+
+architecture behavior of tb_pipelineIFID is
+  
+  -- Calculate the clock period as twice the half-period
+  constant cCLK_PER  : time := gCLK_HPER * 2;
+
+
+  component r_IFID
+   generic(N : integer := 32);
+    port(i_inst       : in std_logic_vector(N-1  downto 0);
+       i_CLK        : in std_logic;
+       i_RST        : in std_logic;
+       i_nextPC	    : in std_logic_vector(N-1 downto 0);
+       i_flush      : in std_logic;
+       i_stall	    : in std_logic;
+       o_inst       : out std_logic_vector(N-1  downto 0);
+       o_nextPC     : out std_logic_vector(N-1  downto 0));
+    end component;
+
+
+  -- Temporary signals to connect to the dff component.
+  signal s_CLK_IFID, s_CLK_IDEX, s_CLK_EXMEM, s_CLK_MEMWB, s_RST_IFID, s_RST_IDEX, s_RST_EXMEM, s_RST_MEMWB, s_halt_IDEX, s_halt_EXMEM, s_halt_MEMWB, so_halt_IDEX, so_halt_EXMEM, so_halt_MEMWB, s_Zero_EXMEM, so_Zero_EXMEM, s_flush_IFID, s_stall_IFID, s_memreadwrite_IDEX, so_memreadwrite_IDEX, s_memreadwrite_EXMEM, so_memreadwrite_EXMEM, s_memreadwrite_MEMWB, so_memwreadwrite_MEMWB : std_logic;
+  signal s_inst_IFID, s_inst_IDEX, s_inst_EXMEM, s_inst_MEMWB, s_nextPC_IFID, s_nextPC_IDEX, s_nextPC_EXMEM, s_nextPC_MEMWB, s_reg1out_IDEX, s_reg2out_IDEX, s_signExt_IDEX, so_reg1out_IDEX, so_reg2out_IDEX, so_signExt_IDEX, s_alu_EXMEM, s_ExMemMUX_EXMEM, so_alu_EXmEM, so_ExMemMUX_EXMEM, s_dmem_MEMWB, s_forward_MEMWB, s_aluout_MEMWB, so_dmem_MEMWB, so_forward_MEMWB, so_aluout_MEMWB, s_jrmuxout_IDEX, so_jrmuxout_IDEX : std_logic_vector(31 downto 0);
+  signal so_inst_IFID, so_inst_IDEX, so_inst_EXMEM, so_inst_MEMWB, so_nextPC_IFID, so_nextPC_IDEX, so_nextPC_EXMEM, so_nextPC_MEMWB, s_jrmuxout_EXMEM, so_jrmuxout_EXMEM, s_jrmuxout_MEMWB, so_jrmuxout_MEMWB : std_logic_vector(31 downto 0);
+  signal s_MEM_IDEX, s_M_EXMEM, so_MEMSig_IDEX, so_M_EXMEM : std_logic_vector(2 downto 0);
+  signal s_EX_IDEX, so_EX_IDEX : std_logic_vector(5 downto 0);
+  signal s_regwriteadder_IDEX, so_RegRs_IDEX, so_RegRt_IDEX, so_RegRd_IDEX, so_regwriteaddr_IDEX, s_rdrtMUX_EXMEM, s_rd_EXMEM, so_rdrtMUX_EXMEM, so_rd_EXMEM, s_rdrtmux_MEMWB, s_rd_MEMWB, so_rdrtmux_MEMWB, so_rd_MEMWB : std_logic_vector(4 downto 0);
+  signal s_WB_IDEX, so_WBSig_IDEX, s_WB_EXMEM, s_WB_MEMWB, so_WB_EXMEM, so_WB_MEMWB : std_logic_vector(3 downto 0);
+
+
+begin
+
+  DUT0: r_IFID 
+  port map(i_inst  => s_inst_IFID,
+       i_CLK       => s_CLK_IFID,
+       i_RST       => s_RST_IFID,
+       i_nextPC	   => s_nextPC_IFID,
+       i_flush     => s_flush_IFID,
+       i_stall	   => s_stall_IFID,
+       o_inst      => so_inst_IFID,
+       o_nextPC    => so_nextPC_IFID);
+
+  
+
+  -- This process sets the clock value (low for gCLK_HPER, then high
+  -- for gCLK_HPER). Absent a "wait" command, processes restart 
+  -- at the beginning once they have reached the final statement.
+  P_CLK: process
+  begin
+    s_CLK_IFID <= '0';
+    wait for gCLK_HPER;
+    s_CLK_IFID <= '1';
+    wait for gCLK_HPER;
+  end process;
+  
+  -- Testbench process  
+  P_TB: process
+  begin
+	--IFID REGISTER
+	s_inst_IFID <= x"11110000";
+	s_flush_IFID <= '0';
+	s_stall_IFID <= '0';
+       	s_nextPC_IFID <= x"00001111";
+	wait for cCLK_PER;
+
+	
+	
+  end process;
+  
+end behavior;

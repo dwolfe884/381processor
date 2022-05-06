@@ -1,0 +1,66 @@
+-------------------------------------------------------------------------
+-- Henry Duwe
+-- Department of Electrical and Computer Engineering
+-- Iowa State University
+-------------------------------------------------------------------------
+
+
+-- TPU_MV_Element.vhd
+-------------------------------------------------------------------------
+-- DESCRIPTION: This file contains an implementation of a processing
+-- element for the systolic matrix-vector multiplication array inspired 
+-- by Google's TPU.
+--
+--
+-- NOTES:
+-- 1/14/19 by H3::Design created.
+-------------------------------------------------------------------------
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+
+entity RippleAdder is
+  generic(N : integer := 32);
+  port(i_D0 		            : in std_logic_vector(N-1 downto 0);
+       i_D1		            : in std_logic_vector(N-1 downto 0);
+       i_Cin 		            : in std_logic;
+       o_Sum 		            : out std_logic_vector(N-1 downto 0);
+       o_v			    : out std_logic;
+       o_Cout 		            : out std_logic);
+
+end RippleAdder;
+
+architecture structure of RippleAdder is
+  
+  -- Describe the component entities as defined in Adder.vhd, Reg.vhd,
+  -- Multiplier.vhd, RegLd.vhd (not strictly necessary).
+  component FullAdder
+    port(i_D0 		            : in std_logic;
+         i_D1		            : in std_logic;
+         i_Cin 		            : in std_logic;
+         o_Sum 		            : out std_logic;
+         o_Cout 		    : out std_logic);
+  end component;
+
+signal s_saved        : std_logic_vector(N-1 downto 0);
+
+begin
+  add0: FullAdder port map(
+              i_D0     => i_D0(0),  -- ith instance's data 0 input hooked up to ith data 0 input.
+              i_D1     => i_D1(0),  -- ith instance's data 1 input hooked up to ith data 1 input.
+	      i_Cin    => i_Cin,
+              o_Sum    => o_Sum(0),
+              o_Cout   => s_saved(0));
+  G_NBit_MUX: for i in 1 to N-1 generate
+    addI: FullAdder port map(
+              i_D0     => i_D0(i),  -- ith instance's data 0 input hooked up to ith data 0 input.
+              i_D1     => i_D1(i),  -- ith instance's data 1 input hooked up to ith data 1 input.
+	      i_Cin    => s_saved(i-1),
+              o_Sum    => o_Sum(i),
+              o_Cout   => s_saved(i));
+  end generate G_NBit_MUX;
+  o_v <= s_saved(N-2) xor s_saved(N-1);
+  o_Cout <= s_saved(N-1);
+
+end structure;

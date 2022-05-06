@@ -1,0 +1,78 @@
+
+#
+# CprE 381 toolflow Timing dump
+#
+
+FMax: 50.93mhz Clk Constraint: 20.00ns Slack: 0.36ns
+
+The path is given below
+
+ ===================================================================
+ From Node    : mem:IMem|altsyncram:ram_rtl_0|altsyncram_eg81:auto_generated|ram_block1a0~porta_we_reg
+ To Node      : register_n4:pc_reg|dffg:\G_NBit_REG2:31:dffi|s_Q
+ Launch Clock : iCLK
+ Latch Clock  : iCLK
+ Data Arrival Path:
+ Total (ns)  Incr (ns)     Type  Element
+ ==========  ========= ==  ====  ===================================
+      0.000      0.000           launch edge time
+      3.083      3.083  R        clock network delay
+      3.346      0.263     uTco  mem:IMem|altsyncram:ram_rtl_0|altsyncram_eg81:auto_generated|ram_block1a0~porta_we_reg
+      6.195      2.849 FR  CELL  IMem|ram_rtl_0|auto_generated|ram_block1a0|portadataout[2]
+      6.924      0.729 RR    IC  IMem|ram~66|datac
+      7.209      0.285 RR  CELL  IMem|ram~66|combout
+      7.962      0.753 RR    IC  control|Equal4~0|datab
+      8.394      0.432 RF  CELL  control|Equal4~0|combout
+      8.663      0.269 FF    IC  control|aluControl[2]~77|datac
+      8.923      0.260 FR  CELL  control|aluControl[2]~77|combout
+      9.933      1.010 RR    IC  control|aluControl[3]~74|dataa
+     10.362      0.429 RF  CELL  control|aluControl[3]~74|combout
+     10.595      0.233 FF    IC  control|aluControl[3]~53|datac
+     10.876      0.281 FF  CELL  control|aluControl[3]~53|combout
+     12.699      1.823 FF    IC  control|aluControl[3]~53clkctrl|inclk[0]
+     12.699      0.000 FF  CELL  control|aluControl[3]~53clkctrl|outclk
+     14.628      1.929 FF    IC  control|sign_ext~8|datad
+     16.205      1.577 FF  LOOP  control|sign_ext|combout
+     16.569      0.364 FF    IC  branchAdder|\G_NBit_MUX:18:addI|myOr|o_F~1|datac
+     16.850      0.281 FF  CELL  branchAdder|\G_NBit_MUX:18:addI|myOr|o_F~1|combout
+     17.100      0.250 FF    IC  branchAdder|\G_NBit_MUX:19:addI|myOr|o_F~0|datad
+     17.225      0.125 FF  CELL  branchAdder|\G_NBit_MUX:19:addI|myOr|o_F~0|combout
+     17.482      0.257 FF    IC  branchAdder|\G_NBit_MUX:20:addI|myOr|o_F~0|datac
+     17.763      0.281 FF  CELL  branchAdder|\G_NBit_MUX:20:addI|myOr|o_F~0|combout
+     18.012      0.249 FF    IC  branchAdder|\G_NBit_MUX:21:addI|myOr|o_F~0|datad
+     18.137      0.125 FF  CELL  branchAdder|\G_NBit_MUX:21:addI|myOr|o_F~0|combout
+     18.387      0.250 FF    IC  branchAdder|\G_NBit_MUX:22:addI|myOr|o_F~0|datad
+     18.512      0.125 FF  CELL  branchAdder|\G_NBit_MUX:22:addI|myOr|o_F~0|combout
+     18.764      0.252 FF    IC  branchAdder|\G_NBit_MUX:23:addI|myOr|o_F~0|datad
+     18.889      0.125 FF  CELL  branchAdder|\G_NBit_MUX:23:addI|myOr|o_F~0|combout
+     19.137      0.248 FF    IC  branchAdder|\G_NBit_MUX:24:addI|myOr|o_F~0|datad
+     19.262      0.125 FF  CELL  branchAdder|\G_NBit_MUX:24:addI|myOr|o_F~0|combout
+     19.510      0.248 FF    IC  branchAdder|\G_NBit_MUX:25:addI|myOr|o_F~0|datad
+     19.635      0.125 FF  CELL  branchAdder|\G_NBit_MUX:25:addI|myOr|o_F~0|combout
+     19.885      0.250 FF    IC  branchAdder|\G_NBit_MUX:26:addI|myOr|o_F~0|datad
+     20.010      0.125 FF  CELL  branchAdder|\G_NBit_MUX:26:addI|myOr|o_F~0|combout
+     20.260      0.250 FF    IC  branchAdder|\G_NBit_MUX:27:addI|myOr|o_F~0|datad
+     20.385      0.125 FF  CELL  branchAdder|\G_NBit_MUX:27:addI|myOr|o_F~0|combout
+     20.622      0.237 FF    IC  branchAdder|\G_NBit_MUX:28:addI|myOr|o_F~0|datad
+     20.747      0.125 FF  CELL  branchAdder|\G_NBit_MUX:28:addI|myOr|o_F~0|combout
+     21.124      0.377 FF    IC  branchAdder|\G_NBit_MUX:29:addI|myOr|o_F~0|datad
+     21.249      0.125 FF  CELL  branchAdder|\G_NBit_MUX:29:addI|myOr|o_F~0|combout
+     21.496      0.247 FF    IC  branchAdder|\G_NBit_MUX:30:addI|myOr|o_F~0|datac
+     21.777      0.281 FF  CELL  branchAdder|\G_NBit_MUX:30:addI|myOr|o_F~0|combout
+     22.007      0.230 FF    IC  branchAdder|\G_NBit_MUX:31:addI|myXor2|o_F|datad
+     22.157      0.150 FR  CELL  branchAdder|\G_NBit_MUX:31:addI|myXor2|o_F|combout
+     22.361      0.204 RR    IC  beforepcmux|\G_NBit_MUX:31:MUXI|myOr|o_F~1|datad
+     22.516      0.155 RR  CELL  beforepcmux|\G_NBit_MUX:31:MUXI|myOr|o_F~1|combout
+     22.516      0.000 RR    IC  pc_reg|\G_NBit_REG2:31:dffi|s_Q|d
+     22.603      0.087 RR  CELL  register_n4:pc_reg|dffg:\G_NBit_REG2:31:dffi|s_Q
+ Data Required Path:
+ Total (ns)  Incr (ns)     Type  Element
+ ==========  ========= ==  ====  ===================================
+     20.000     20.000           latch edge time
+     22.970      2.970  R        clock network delay
+     22.950     -0.020           clock uncertainty
+     22.968      0.018     uTsu  register_n4:pc_reg|dffg:\G_NBit_REG2:31:dffi|s_Q
+ Data Arrival Time  :    22.603
+ Data Required Time :    22.968
+ Slack              :     0.365
+ ===================================================================

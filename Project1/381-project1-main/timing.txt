@@ -1,0 +1,145 @@
+
+#
+# CprE 381 toolflow Timing dump
+#
+
+FMax: 24.01mhz Clk Constraint: 20.00ns Slack: -21.64ns
+
+The path is given below
+
+ ===================================================================
+ From Node    : register_n4:pc_reg|dffg:\G_NBit_REG1:6:dffi|s_Q
+ To Node      : register_n4:pc_reg|dffg:\G_NBit_REG1:5:dffi|s_Q
+ Launch Clock : iCLK
+ Latch Clock  : iCLK
+ Data Arrival Path:
+ Total (ns)  Incr (ns)     Type  Element
+ ==========  ========= ==  ====  ===================================
+      0.000      0.000           launch edge time
+      3.329      3.329  R        clock network delay
+      3.561      0.232     uTco  register_n4:pc_reg|dffg:\G_NBit_REG1:6:dffi|s_Q
+      3.561      0.000 RR  CELL  pc_reg|\G_NBit_REG1:6:dffi|s_Q|q
+      3.822      0.261 RR    IC  s_IMemAddr[6]~0|datad
+      3.977      0.155 RR  CELL  s_IMemAddr[6]~0|combout
+      7.228      3.251 RR    IC  IMem|ram~47570|datad
+      7.383      0.155 RR  CELL  IMem|ram~47570|combout
+      8.002      0.619 RR    IC  IMem|ram~47571|datad
+      8.157      0.155 RR  CELL  IMem|ram~47571|combout
+      8.829      0.672 RR    IC  IMem|ram~47579|dataa
+      9.229      0.400 RR  CELL  IMem|ram~47579|combout
+     11.817      2.588 RR    IC  IMem|ram~47590|dataa
+     12.174      0.357 RR  CELL  IMem|ram~47590|combout
+     12.407      0.233 RR    IC  IMem|ram~47601|datab
+     12.841      0.434 RF  CELL  IMem|ram~47601|combout
+     13.110      0.269 FF    IC  IMem|ram~47602|datab
+     13.514      0.404 FF  CELL  IMem|ram~47602|combout
+     13.781      0.267 FF    IC  IMem|ram~47645|datab
+     14.185      0.404 FF  CELL  IMem|ram~47645|combout
+     14.411      0.226 FF    IC  IMem|ram~47646|datad
+     14.536      0.125 FF  CELL  IMem|ram~47646|combout
+     14.764      0.228 FF    IC  IMem|ram~47817|datad
+     14.914      0.150 FR  CELL  IMem|ram~47817|combout
+     15.599      0.685 RR    IC  control|aluControl[3]~14|datab
+     16.017      0.418 RR  CELL  control|aluControl[3]~14|combout
+     16.220      0.203 RR    IC  control|aluControl[3]~15|datac
+     16.507      0.287 RR  CELL  control|aluControl[3]~15|combout
+     16.709      0.202 RR    IC  control|aluControl[3]~16|datac
+     16.994      0.285 RR  CELL  control|aluControl[3]~16|combout
+     17.198      0.204 RR    IC  control|aluControl[3]~19|datad
+     17.353      0.155 RR  CELL  control|aluControl[3]~19|combout
+     17.991      0.638 RR    IC  control|aluControl[3]~19clkctrl|inclk[0]
+     17.991      0.000 RR  CELL  control|aluControl[3]~19clkctrl|outclk
+     19.980      1.989 RR    IC  control|aluSrc~3|datad
+     21.576      1.596 RF  LOOP  control|aluSrc|combout
+     24.003      2.427 FF    IC  alu0|muxSrc|\G_NBit_MUX:0:MUXI|myOr|o_F~1|datad
+     24.153      0.150 FR  CELL  alu0|muxSrc|\G_NBit_MUX:0:MUXI|myOr|o_F~1|combout
+     24.404      0.251 RR    IC  alu0|adderI|add0|myOr|o_F~0|datad
+     24.559      0.155 RR  CELL  alu0|adderI|add0|myOr|o_F~0|combout
+     24.784      0.225 RR    IC  alu0|adderI|\G_NBit_MUX:1:addI|myOr|o_F~0|datac
+     25.071      0.287 RR  CELL  alu0|adderI|\G_NBit_MUX:1:addI|myOr|o_F~0|combout
+     25.299      0.228 RR    IC  alu0|adderI|\G_NBit_MUX:2:addI|myOr|o_F~0|datad
+     25.454      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:2:addI|myOr|o_F~0|combout
+     25.681      0.227 RR    IC  alu0|adderI|\G_NBit_MUX:3:addI|myOr|o_F~0|datad
+     25.836      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:3:addI|myOr|o_F~0|combout
+     26.063      0.227 RR    IC  alu0|adderI|\G_NBit_MUX:4:addI|myOr|o_F~0|datad
+     26.218      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:4:addI|myOr|o_F~0|combout
+     26.446      0.228 RR    IC  alu0|adderI|\G_NBit_MUX:5:addI|myOr|o_F~0|datad
+     26.601      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:5:addI|myOr|o_F~0|combout
+     26.828      0.227 RR    IC  alu0|adderI|\G_NBit_MUX:6:addI|myOr|o_F~0|datac
+     27.115      0.287 RR  CELL  alu0|adderI|\G_NBit_MUX:6:addI|myOr|o_F~0|combout
+     27.339      0.224 RR    IC  alu0|adderI|\G_NBit_MUX:7:addI|myOr|o_F~0|datac
+     27.626      0.287 RR  CELL  alu0|adderI|\G_NBit_MUX:7:addI|myOr|o_F~0|combout
+     27.853      0.227 RR    IC  alu0|adderI|\G_NBit_MUX:8:addI|myOr|o_F~0|datad
+     28.008      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:8:addI|myOr|o_F~0|combout
+     28.235      0.227 RR    IC  alu0|adderI|\G_NBit_MUX:9:addI|myOr|o_F~0|datad
+     28.390      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:9:addI|myOr|o_F~0|combout
+     28.615      0.225 RR    IC  alu0|adderI|\G_NBit_MUX:10:addI|myOr|o_F~0|datad
+     28.770      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:10:addI|myOr|o_F~0|combout
+     28.996      0.226 RR    IC  alu0|adderI|\G_NBit_MUX:11:addI|myOr|o_F~0|datac
+     29.283      0.287 RR  CELL  alu0|adderI|\G_NBit_MUX:11:addI|myOr|o_F~0|combout
+     29.507      0.224 RR    IC  alu0|adderI|\G_NBit_MUX:12:addI|myOr|o_F~0|datac
+     29.794      0.287 RR  CELL  alu0|adderI|\G_NBit_MUX:12:addI|myOr|o_F~0|combout
+     30.021      0.227 RR    IC  alu0|adderI|\G_NBit_MUX:13:addI|myOr|o_F~0|datad
+     30.176      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:13:addI|myOr|o_F~0|combout
+     30.405      0.229 RR    IC  alu0|adderI|\G_NBit_MUX:14:addI|myOr|o_F~0|datad
+     30.560      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:14:addI|myOr|o_F~0|combout
+     31.450      0.890 RR    IC  alu0|adderI|\G_NBit_MUX:15:addI|myOr|o_F~0|datad
+     31.605      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:15:addI|myOr|o_F~0|combout
+     31.831      0.226 RR    IC  alu0|adderI|\G_NBit_MUX:16:addI|myOr|o_F~0|datad
+     31.986      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:16:addI|myOr|o_F~0|combout
+     32.212      0.226 RR    IC  alu0|adderI|\G_NBit_MUX:17:addI|myOr|o_F~0|datad
+     32.367      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:17:addI|myOr|o_F~0|combout
+     32.594      0.227 RR    IC  alu0|adderI|\G_NBit_MUX:18:addI|myOr|o_F~0|datad
+     32.749      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:18:addI|myOr|o_F~0|combout
+     32.961      0.212 RR    IC  alu0|adderI|\G_NBit_MUX:19:addI|myOr|o_F~0|datad
+     33.116      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:19:addI|myOr|o_F~0|combout
+     33.328      0.212 RR    IC  alu0|adderI|\G_NBit_MUX:20:addI|myOr|o_F~0|datad
+     33.483      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:20:addI|myOr|o_F~0|combout
+     33.712      0.229 RR    IC  alu0|adderI|\G_NBit_MUX:21:addI|myOr|o_F~0|datad
+     33.867      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:21:addI|myOr|o_F~0|combout
+     34.093      0.226 RR    IC  alu0|adderI|\G_NBit_MUX:22:addI|myOr|o_F~0|datad
+     34.248      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:22:addI|myOr|o_F~0|combout
+     34.476      0.228 RR    IC  alu0|adderI|\G_NBit_MUX:23:addI|myOr|o_F~0|datad
+     34.631      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:23:addI|myOr|o_F~0|combout
+     35.368      0.737 RR    IC  alu0|adderI|\G_NBit_MUX:24:addI|myOr|o_F~0|datad
+     35.523      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:24:addI|myOr|o_F~0|combout
+     35.737      0.214 RR    IC  alu0|adderI|\G_NBit_MUX:25:addI|myOr|o_F~0|datad
+     35.892      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:25:addI|myOr|o_F~0|combout
+     36.103      0.211 RR    IC  alu0|adderI|\G_NBit_MUX:26:addI|myOr|o_F~0|datad
+     36.258      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:26:addI|myOr|o_F~0|combout
+     36.469      0.211 RR    IC  alu0|adderI|\G_NBit_MUX:27:addI|myOr|o_F~0|datad
+     36.624      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:27:addI|myOr|o_F~0|combout
+     36.838      0.214 RR    IC  alu0|adderI|\G_NBit_MUX:28:addI|myOr|o_F~0|datad
+     36.993      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:28:addI|myOr|o_F~0|combout
+     37.423      0.430 RR    IC  alu0|adderI|\G_NBit_MUX:29:addI|myOr|o_F~0|datac
+     37.710      0.287 RR  CELL  alu0|adderI|\G_NBit_MUX:29:addI|myOr|o_F~0|combout
+     37.922      0.212 RR    IC  alu0|adderI|\G_NBit_MUX:30:addI|myOr|o_F~0|datad
+     38.077      0.155 RR  CELL  alu0|adderI|\G_NBit_MUX:30:addI|myOr|o_F~0|combout
+     38.747      0.670 RR    IC  alu0|Mux46~12|datad
+     38.902      0.155 RR  CELL  alu0|Mux46~12|combout
+     39.105      0.203 RR    IC  alu0|Mux46~15|datad
+     39.260      0.155 RR  CELL  alu0|Mux46~15|combout
+     39.463      0.203 RR    IC  alu0|Mux46~18|datad
+     39.618      0.155 RR  CELL  alu0|Mux46~18|combout
+     41.318      1.700 RR    IC  alu0|Equal0~11|datad
+     41.457      0.139 RF  CELL  alu0|Equal0~11|combout
+     41.695      0.238 FF    IC  s_finalpc[22]~67|datad
+     41.845      0.150 FR  CELL  s_finalpc[22]~67|combout
+     42.526      0.681 RR    IC  pc_reg|\G_NBit_REG1:17:dffi|s_Q~0|datad
+     42.681      0.155 RR  CELL  pc_reg|\G_NBit_REG1:17:dffi|s_Q~0|combout
+     44.456      1.775 RR    IC  s_finalpc[5]~82|datac
+     44.743      0.287 RR  CELL  s_finalpc[5]~82|combout
+     44.743      0.000 RR    IC  pc_reg|\G_NBit_REG1:5:dffi|s_Q|d
+     44.830      0.087 RR  CELL  register_n4:pc_reg|dffg:\G_NBit_REG1:5:dffi|s_Q
+ Data Required Path:
+ Total (ns)  Incr (ns)     Type  Element
+ ==========  ========= ==  ====  ===================================
+     20.000     20.000           latch edge time
+     23.187      3.187  R        clock network delay
+     23.189      0.002           clock pessimism removed
+     23.169     -0.020           clock uncertainty
+     23.187      0.018     uTsu  register_n4:pc_reg|dffg:\G_NBit_REG1:5:dffi|s_Q
+ Data Arrival Time  :    44.830
+ Data Required Time :    23.187
+ Slack              :   -21.643 (VIOLATED)
+ ===================================================================

@@ -1,0 +1,89 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity tb_regFile is
+  generic(N : integer := 32;
+          gCLK_HPER   : time := 50 ns);
+end tb_regFile;
+
+architecture behavior of tb_regFile is
+  
+  -- Calculate the clock period as twice the half-period
+  constant cCLK_PER  : time := gCLK_HPER * 2;
+
+
+  component regFile
+    port(i_CLK        : in std_logic;
+       i_RST        : in std_logic;
+       i_input        : in std_logic_vector(31 downto 0);
+       i_write	    : in std_logic_vector(4 downto 0);
+       i_read1	    : in std_logic_vector(4 downto 0);
+       i_read2	    : in std_logic_vector(4 downto 0);
+       o_read1          : out std_logic_vector(31  downto 0);
+       o_read2          : out std_logic_vector(31  downto 0));
+  end component;
+
+  -- Temporary signals to connect to the dff component.
+  signal s_CLK, s_RST : std_logic;
+  signal s_input : std_logic_vector(31 downto 0):= x"00000000"; 
+  signal s_write, s_read1,s_read2 : std_logic_vector(4 downto 0) := "00000";
+  signal s_out1, s_out2 : std_logic_vector(31 downto 0);
+
+begin
+
+  DUT: regFile 
+  port map(i_CLK => s_CLK, 
+           i_RST => s_RST,
+           i_input  => s_input,
+	   i_write  => s_write,
+           i_read1   => s_read1,
+           i_read2   => s_read2,
+           o_read1   => s_out1,
+           o_read2   => s_out2);
+
+  -- This process sets the clock value (low for gCLK_HPER, then high
+  -- for gCLK_HPER). Absent a "wait" command, processes restart 
+  -- at the beginning once they have reached the final statement.
+  P_CLK: process
+  begin
+    s_CLK <= '0';
+    wait for gCLK_HPER;
+    s_CLK <= '1';
+    wait for gCLK_HPER;
+  end process;
+  
+  -- Testbench process  
+  P_TB: process
+  begin
+    -- Reset the reg file
+    s_RST <= '1';
+    s_input   <= x"00000000";
+    wait for cCLK_PER;
+
+    -- Store '1'
+    s_RST <= '0';
+    s_write  <= "00000"; -- Write reg0
+    s_input <= x"000000FF"; -- value to write to reg0
+    s_read1   <= "00000"; -- Read reg0
+    s_read2   <= "00001"; -- Read reg1
+    wait for cCLK_PER;  
+    s_write  <= "00001"; -- Write reg1
+    s_input <= x"0000DEAD"; -- value to write to reg0
+    s_read1   <= "00000"; -- Read reg31
+    s_read2   <= "00001"; -- Read reg 1
+    wait for cCLK_PER;
+    s_write  <= "00010"; -- Write reg2
+    s_input <= x"0000BEEF"; -- value to write to reg0
+    s_read1   <= "00000"; -- Read reg31
+    s_read2   <= "00001"; -- Read reg 1
+    wait for cCLK_PER;
+    --s_write  <= "00001"; -- Write reg1
+    --s_input <= x"0000DEAD"; -- value to write to reg0
+    s_read1   <= "00001"; -- Read reg31
+    s_read2   <= "00010"; -- Read reg 1
+    wait for cCLK_PER;
+
+    wait;
+  end process;
+  
+end behavior;

@@ -1,0 +1,6 @@
+vcom -work work /home/djwolfe/cpre381/381-project1/tb_fetch.vhd
+vcom -work work /home/djwolfe/cpre381/381-project1/fetch.vhd
+vsim -voptargs=+acc work.tb_fetch
+mem load -infile dmem.hex -format hex /tb_fetch/DUT/i_mem/ram
+add wave -position insertpoint sim:/tb_fetch/*
+run 1000

@@ -1,0 +1,350 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+
+entity BarrelShifter is
+generic(N : integer := 32);
+port (	
+	SHL : in std_logic_vector(4 downto 0);
+	SHR : in std_logic_vector(4 downto 0);
+	SHA : in std_logic_vector(4 downto 0);
+	data_in: in std_logic_vector (N-1 downto 0);
+	data_out: out std_logic_vector (N-1 downto 0));
+end BarrelShifter;
+
+architecture structure of BarrelShifter is
+  component mux2t1 is
+    port(i_D0 : in std_logic;
+	 i_D1 : in std_logic;
+	 i_S  : in std_logic;
+	 o_O  : out std_logic);
+
+  end component;
+
+signal s_ShiftCarry1, s_ShiftCarry2, s_ShiftCarry4, s_ShiftCarry8, s_ShiftCarry16 : std_logic_vector(N-1 downto 0);
+signal s_ShiftCarry1R, s_ShiftCarry2R, s_ShiftCarry4R, s_ShiftCarry8R, s_ShiftCarry16R : std_logic_vector(N-1 downto 0);
+signal s_ShiftCarry1A, s_ShiftCarry2A, s_ShiftCarry4A, s_ShiftCarry8A, s_ShiftCarry16A : std_logic_vector(N-1 downto 0);
+
+begin
+
+--This is the 1st mux for the Shift Left 1 row of muxes
+muxLSB1 : mux2t1 port map(
+	i_D0 => data_in(0),  --When the select line is 0 the data is not shifted
+	i_D1 => '0',        --When the select line is 1 the data is shifted
+	i_S  => SHL(0),
+	o_O  => s_ShiftCarry1(0)); 
+
+--This is the rest of the muxes for the Shift Left 1 row
+G_SHL_1_MUX : for i in 1 to N-1 generate
+  mux_SHL1 : mux2t1 port map(
+	i_D0 => data_in(i),  	     --When the select line is 0 the data is not shifted
+	i_D1 => data_in(i-1),        --When the select line is 1 the data is shifted
+	i_S  => SHL(0),
+	o_O  => s_ShiftCarry1(i)); 
+end generate G_SHL_1_MUX;
+
+-------------------------------------------------------------------------------------------------
+--This is the 1st mux for the Shift Left 2 row of muxes
+muxLSB2a : mux2t1 port map(
+	i_D0 => s_ShiftCarry1(0),  --When the select line is 0 the data is not shifted
+	i_D1 => '0',             --When the select line is 1 the data is shifted
+	i_S  => SHL(1),
+	o_O  => s_ShiftCarry2(0));
+
+--This is the 2nd mux for the Shift Left 1 row of muxes
+muxLSB2b : mux2t1 port map(
+	i_D0 => s_ShiftCarry1(1),  --When the select line is 0 the data is not shifted
+	i_D1 => '0',             --When the select line is 1 the data is shifted
+	i_S  => SHL(1),
+	o_O  => s_ShiftCarry2(1));
+
+--This is the rest of the muxes for the Shift Left 2 row
+G_SHL_2_MUX : for i in 2 to N-1 generate
+  mux2 : mux2t1 port map(
+	i_D0 => s_ShiftCarry1(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => s_ShiftCarry1(i-2),        --When the select line is 1 the data is shifted
+	i_S  => SHL(1),
+	o_O  => s_ShiftCarry2(i)); 
+end generate G_SHL_2_MUX;
+
+-------------------------------------------------------------------------------------------------
+--This is the first 4 of the muxes for the Shift Left 4 row
+G_SHL_4_MUX0 : for i in 0 to 3 generate
+  muxLSB4 : mux2t1 port map(
+	i_D0 => s_ShiftCarry2(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => '0',        		  --When the select line is 1 the data is shifted
+	i_S  => SHL(2),
+	o_O  => s_ShiftCarry4(i)); 
+end generate G_SHL_4_MUX0;
+
+--This is the rest of the muxes for the Shift Left 4 row
+G_SHL_4_MUX : for i in 4 to N-1 generate
+  mux4 : mux2t1 port map(
+	i_D0 => s_ShiftCarry2(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => s_ShiftCarry2(i-4),        --When the select line is 1 the data is shifted
+	i_S  => SHL(2),
+	o_O  => s_ShiftCarry4(i)); 
+end generate G_SHL_4_MUX;
+
+-------------------------------------------------------------------------------------------------
+--This is the first 8 of the muxes for the Shift Left 8 row
+G_SHL_8_MUX0 : for i in 0 to 7 generate
+  muxLSB8 : mux2t1 port map(
+	i_D0 => s_ShiftCarry4(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => '0',        		  --When the select line is 1 the data is shifted
+	i_S  => SHL(3),
+	o_O  => s_ShiftCarry8(i)); 
+end generate G_SHL_8_MUX0;
+
+--This is the rest of the muxes for the Shift Left 8 row
+G_SHL_8_MUX : for i in 8 to N-1 generate
+  mux8 : mux2t1 port map(
+	i_D0 => s_ShiftCarry4(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => s_ShiftCarry4(i-8),        --When the select line is 1 the data is shifted
+	i_S  => SHL(3),
+	o_O  => s_ShiftCarry8(i)); 
+end generate G_SHL_8_MUX;
+
+-------------------------------------------------------------------------------------------------
+--This is the first 16 of the muxes for the Shift Left 16 row
+G_SHL_16_MUX0 : for i in 0 to 15 generate
+  muxLSB16 : mux2t1 port map(
+	i_D0 => s_ShiftCarry8(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => '0',        		  --When the select line is 1 the data is shifted
+	i_S  => SHL(4),
+	o_O  => s_ShiftCarry16(i)); 
+end generate G_SHL_16_MUX0;
+
+--This is the rest of the muxes for the Shift Left 16 row
+G_SHL_16_MUX : for i in 16 to N-1 generate
+  mux16 : mux2t1 port map(
+	i_D0 => s_ShiftCarry8(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => s_ShiftCarry8(i-16),        --When the select line is 1 the data is shifted
+	i_S  => SHL(4),
+	o_O  => s_ShiftCarry16(i)); 
+end generate G_SHL_16_MUX;
+
+------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------
+
+--This is the 1st mux for the Shift Right 1 row of muxes
+muxMSB1 : mux2t1 port map(
+	i_D0 => data_in(31),  --When the select line is 0 the data is not shifted
+	i_D1 => '0',        --When the select line is 1 the data is shifted
+	i_S  => SHR(0),
+	o_O  => s_ShiftCarry1R(31)); 
+
+--This is the rest of the muxes for the Shift Right 1 row
+
+G_SHR_1_MUX : for i in 0 to N-2 generate
+  mux_SHR1 : mux2t1 port map(
+	i_D0 => data_in(i),  	     --When the select line is 0 the data is not shifted
+	i_D1 => data_in(i+1),        --When the select line is 1 the data is shifted
+	i_S  => SHR(0),
+	o_O  => s_ShiftCarry1R(i)); 
+end generate G_SHR_1_MUX;
+
+-------------------------------------------------------------------------------------------------
+--This is the 1st mux for the Shift Right 2 row of muxes
+muxMSB2a : mux2t1 port map(
+	i_D0 => s_ShiftCarry1R(31),  --When the select line is 0 the data is not shifted
+	i_D1 => '0',             --When the select line is 1 the data is shifted
+	i_S  => SHR(1),
+	o_O  => s_ShiftCarry2R(31));
+
+--This is the 2nd mux for the Shift Right 1 row of muxes
+muxMSB2b : mux2t1 port map(
+	i_D0 => s_ShiftCarry1R(30),  --When the select line is 0 the data is not shifted
+	i_D1 => '0',             --When the select line is 1 the data is shifted
+	i_S  => SHR(1),
+	o_O  => s_ShiftCarry2R(30));
+
+--This is the rest of the muxes for the Shift Right 2 row
+G_SHR_2_MUX : for i in 0 to N-3 generate
+  mux2R : mux2t1 port map(
+	i_D0 => s_ShiftCarry1R(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => s_ShiftCarry1R(i+2),        --When the select line is 1 the data is shifted
+	i_S  => SHR(1),
+	o_O  => s_ShiftCarry2R(i)); 
+end generate G_SHR_2_MUX;
+
+-------------------------------------------------------------------------------------------------
+--This is the first 4 of the muxes for the Shift Right 4 row
+G_SHR_4_MUX0 : for i in N-4 to 31 generate
+  muxMSB4 : mux2t1 port map(
+	i_D0 => s_ShiftCarry2R(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => '0',        		  --When the select line is 1 the data is shifted
+	i_S  => SHR(2),
+	o_O  => s_ShiftCarry4R(i)); 
+end generate G_SHR_4_MUX0;
+
+--This is the rest of the muxes for the Shift Right 4 row
+G_SHR_4_MUX : for i in 0 to N-5 generate
+  mux4R : mux2t1 port map(
+	i_D0 => s_ShiftCarry2R(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => s_ShiftCarry2R(i+4),        --When the select line is 1 the data is shifted
+	i_S  => SHR(2),
+	o_O  => s_ShiftCarry4R(i)); 
+end generate G_SHR_4_MUX;
+
+-------------------------------------------------------------------------------------------------
+--This is the first 8 of the muxes for the Shift Right 8 row
+G_SHR_8_MUX0 : for i in N-8 to 31 generate
+  muxMSB8 : mux2t1 port map(
+	i_D0 => s_ShiftCarry4R(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => '0',        		  --When the select line is 1 the data is shifted
+	i_S  => SHR(3),
+	o_O  => s_ShiftCarry8R(i)); 
+end generate G_SHR_8_MUX0;
+
+--This is the rest of the muxes for the Shift Right 8 row
+G_SHR_8_MUX : for i in 0 to N-9 generate
+  mux8R : mux2t1 port map(
+	i_D0 => s_ShiftCarry4R(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => s_ShiftCarry4R(i+8),        --When the select line is 1 the data is shifted
+	i_S  => SHR(3),
+	o_O  => s_ShiftCarry8R(i)); 
+end generate G_SHR_8_MUX;
+
+-------------------------------------------------------------------------------------------------
+--This is the first 16 of the muxes for the Shift Right 16 row
+G_SHR_16_MUX0 : for i in N-16 to 31 generate
+  muxMSB16 : mux2t1 port map(
+	i_D0 => s_ShiftCarry8R(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => '0',        		  --When the select line is 1 the data is shifted
+	i_S  => SHR(4),
+	o_O  => s_ShiftCarry16R(i)); 
+end generate G_SHR_16_MUX0;
+
+--This is the rest of the muxes for the Shift Right 16 row
+G_SHR_16_MUX : for i in 0 to N-17 generate
+  mux16R : mux2t1 port map(
+	i_D0 => s_ShiftCarry8R(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => s_ShiftCarry8R(i+16),        --When the select line is 1 the data is shifted
+	i_S  => SHR(4),
+	o_O  => s_ShiftCarry16R(i)); 
+end generate G_SHR_16_MUX;
+
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+--This is the 1st mux for the Shift Right 1 row of muxes
+muxMSB1A : mux2t1 port map(
+	i_D0 => data_in(31),  --When the select line is 0 the data is not shifted
+	i_D1 => data_in(31),        --When the select line is 1 the data is shifted
+	i_S  => SHA(0),
+	o_O  => s_ShiftCarry1A(31)); 
+
+--This is the rest of the muxes for the Shift Right Arithmetic 1 row
+G_SHA_1_MUX : for i in 0 to N-2 generate
+  mux_SHA1 : mux2t1 port map(
+	i_D0 => data_in(i),  	     --When the select line is 0 the data is not shifted
+	i_D1 => data_in(i+1),        --When the select line is 1 the data is shifted
+	i_S  => SHA(0),
+	o_O  => s_ShiftCarry1A(i)); 
+end generate G_SHA_1_MUX;
+
+-------------------------------------------------------------------------------------------------
+--This is the 1st mux for the Shift Right Arithmetic 2 row of muxes
+muxMSB2c : mux2t1 port map(
+	i_D0 => s_ShiftCarry1A(31),  --When the select line is 0 the data is not shifted
+	i_D1 => data_in(31),        --When the select line is 1 the data is shifted
+	i_S  => SHA(1),
+	o_O  => s_ShiftCarry2A(31));
+
+--This is the 2nd mux for the Shift Right Arithmetic 2 row of muxes
+muxMSB2d : mux2t1 port map(
+	i_D0 => s_ShiftCarry1A(30),  --When the select line is 0 the data is not shifted
+	i_D1 => data_in(31),        --When the select line is 1 the data is shifted
+	i_S  => SHA(1),
+	o_O  => s_ShiftCarry2A(30));
+
+--This is the rest of the muxes for the Shift Right Arithemtic 2 row
+G_SHA_2_MUX : for i in 0 to N-3 generate
+  mux2A : mux2t1 port map(
+	i_D0 => s_ShiftCarry1A(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => s_ShiftCarry1A(i+2),        --When the select line is 1 the data is shifted
+	i_S  => SHA(1),
+	o_O  => s_ShiftCarry2A(i)); 
+end generate G_SHA_2_MUX;
+
+-------------------------------------------------------------------------------------------------
+--This is the first 4 of the muxes for the Shift Right Arithmetic 4 row
+G_SHA_4_MUX0 : for i in N-4 to 31 generate
+  	muxMSB4a : mux2t1 port map(
+	    i_D0 => s_ShiftCarry2A(i), 	  --When the select line is 0 the data is not shifted
+	    i_D1 => data_in(31),        		  --When the select line is 1 the data is shifted
+	    i_S  => SHA(2),
+	    o_O  => s_ShiftCarry4A(i)); 
+    end generate G_SHA_4_MUX0;
+
+--This is the rest of the muxes for the Shift Right Arithmetic 4 row
+G_SHA_4_MUX : for i in 0 to N-5 generate
+  mux4A : mux2t1 port map(
+	i_D0 => s_ShiftCarry2A(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => s_ShiftCarry2A(i+4),        --When the select line is 1 the data is shifted
+	i_S  => SHA(2),
+	o_O  => s_ShiftCarry4A(i)); 
+end generate G_SHA_4_MUX;
+
+-------------------------------------------------------------------------------------------------
+--This is the first 8 of the muxes for the Shift Right Arithemtic 8 row
+G_SHA_8_MUX0 : for i in N-8 to 31 generate
+  muxMSB8a : mux2t1 port map(
+	i_D0 => s_ShiftCarry4A(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => data_in(31),        		  --When the select line is 1 the data is shifted
+	i_S  => SHA(3),
+	o_O  => s_ShiftCarry8A(i)); 
+end generate G_SHA_8_MUX0;
+
+--This is the rest of the muxes for the Shift Right Arithemtic 8 row
+G_SHA_8_MUX : for i in 0 to N-9 generate
+  mux8A : mux2t1 port map(
+	i_D0 => s_ShiftCarry4A(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => s_ShiftCarry4A(i+8),        --When the select line is 1 the data is shifted
+	i_S  => SHA(3),
+	o_O  => s_ShiftCarry8A(i)); 
+end generate G_SHA_8_MUX;
+
+-------------------------------------------------------------------------------------------------
+--This is the first 16 of the muxes for the Shift Right Arithmetic 16 row
+G_SHA_16_MUX0 : for i in N-16 to 31 generate
+  muxMSB16a : mux2t1 port map(
+	i_D0 => s_ShiftCarry8A(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => data_in(31),      		  --When the select line is 1 the data is shifted
+	i_S  => SHA(4),
+	o_O  => s_ShiftCarry16A(i)); 
+end generate G_SHA_16_MUX0;
+
+--This is the rest of the muxes for the Shift Right 16 row
+G_SHA_16_MUX : for i in 0 to N-17 generate
+  mux16A : mux2t1 port map(
+	i_D0 => s_ShiftCarry8A(i), 	  --When the select line is 0 the data is not shifted
+	i_D1 => s_ShiftCarry8A(i+16),        --When the select line is 1 the data is shifted
+	i_S  => SHA(4),
+	o_O  => s_ShiftCarry16A(i)); 
+end generate G_SHA_16_MUX;
+
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+
+--Puts the final shifted result in data_out
+process(data_in, SHL, SHR, SHA, s_ShiftCarry16, s_ShiftCarry16R, s_ShiftCarry16A)
+    begin
+	if(SHL(0) = '1') or (SHL(1) = '1') or (SHL(2) = '1') or (SHL(3) = '1') or (SHL(4) = '1') then
+	    data_out <= s_ShiftCarry16;
+	elsif(SHR(0) = '1') or (SHR(1) = '1') or (SHR(2) = '1') or (SHR(3) = '1') or (SHR(4) = '1') then
+	    data_out <= s_ShiftCarry16R;
+	elsif(SHA(0) = '1') or (SHA(1) = '1') or (SHA(2) = '1') or (SHA(3) = '1') or (SHA(4) = '1') then
+	    data_out <= s_ShiftCarry16A;
+	elsif(SHL(0) = '0') and (SHL(1) = '0') and (SHL(2) = '0') and (SHL(3) = '0') and (SHL(4) = '0') then
+	    data_out <= data_in;
+	elsif(SHR(0) = '0') and (SHR(1) = '0') and (SHR(2) = '0') and (SHR(3) = '0') and (SHR(4) = '0') then
+	    data_out <= data_in;
+	elsif(SHA(0) = '0') and (SHA(1) = '0') and (SHA(2) = '0') and (SHA(3) = '0') and (SHA(4) = '0') then
+	    data_out <= data_in;
+	else
+ 	    data_out <= x"00000000";
+    end if;
+end process;
+
+end structure;

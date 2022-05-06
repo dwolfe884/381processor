@@ -1,0 +1,267 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity tb_datapath is
+  generic(N : integer := 32;
+          gCLK_HPER   : time := 50 ns);
+end tb_datapath;
+
+architecture behavior of tb_datapath is
+  
+  -- Calculate the clock period as twice the half-period
+  constant cCLK_PER  : time := gCLK_HPER * 2;
+
+
+  component datapath
+    port(i_CLK        : in std_logic;
+       i_RST        : in std_logic;
+       ALUSrc	    : in std_logic;
+       add_sub	    : in std_logic;
+       i_imm        : in std_logic_vector(31 downto 0);
+       i_RT	    : in std_logic_vector(4 downto 0);
+       i_RS	    : in std_logic_vector(4 downto 0);
+       i_RD	    : in std_logic_vector(4 downto 0);
+       test_out1    : out std_logic_vector(31 downto 0);
+       test_out2    : out std_logic_vector(31 downto 0);
+       alu_out      : out std_logic_vector(31 downto 0);
+       o_Cout		: out std_logic);
+
+  end component;
+
+  -- Temporary signals to connect to the dff component.
+  signal s_CLK, s_RST, s_ALUSrc, s_add_sub : std_logic;
+  signal s_ALUSrc, s_add_sub : std_logic := '0';
+  signal s_imm : std_logic_vector(31 downto 0):= x"00000000"; 
+  signal s_RT, s_RS,s_RD : std_logic_vector(4 downto 0) := "00000";
+  signal s_Cout : std_logic;
+  signal s_out1, s_out2, s_alu_out : std_logic_vector(31 downto 0);
+
+begin
+
+  DUT: datapath 
+  port map(i_CLK => s_CLK, 
+           i_RST => s_RST,
+	   ALUSrc => s_ALUSrc,
+	   add_sub => s_add_sub,
+           i_imm  => s_imm,
+	   i_RT  => s_RT,
+           i_RS   => s_RS,
+           i_RD   => s_RD,
+           test_out1 => s_out1,
+           test_out2 => s_out2,
+           alu_out  => s_alu_out,
+           o_Cout   => s_Cout);
+
+  -- This process sets the clock value (low for gCLK_HPER, then high
+  -- for gCLK_HPER). Absent a "wait" command, processes restart 
+  -- at the beginning once they have reached the final statement.
+  P_CLK: process
+  begin
+    s_CLK <= '0';
+    wait for gCLK_HPER;
+    s_CLK <= '1';
+    wait for gCLK_HPER;
+  end process;
+  
+  -- Testbench process  
+  P_TB: process
+  begin
+    -- Reset the reg file
+    s_RST <= '1';
+    s_imm <= x"00000000";
+    wait for cCLK_PER;
+
+    -- addi $1, $0, 1
+    s_RST <= '0';
+    s_ALUSrc <= '1';
+    s_add_sub <= '0';
+    s_RT <= "00001"; --register or imm
+    s_RD <= "00001"; --dest register
+    s_RS <= "00000"; --2nd reg
+    s_imm <= x"00000001"; --imm
+    wait for cCLK_PER;  
+    -- addi $2, $0, 2
+    s_RST <= '0';
+    s_ALUSrc <= '1';
+    s_add_sub <= '0';
+    s_RT <= "00010"; --register or imm
+    s_RD <= "00010"; --dest register
+    s_RS <= "00000"; --2nd reg
+    s_imm <= x"00000002"; --imm
+    wait for cCLK_PER; 
+    -- addi $3, $0, 3
+    s_RST <= '0';
+    s_ALUSrc <= '1';
+    s_add_sub <= '0';
+    s_RT <= "00011"; --register or imm
+    s_RD <= "00011"; --dest register
+    s_RS <= "00000"; --2nd reg
+    s_imm <= x"00000003"; --imm
+    wait for cCLK_PER;
+    -- addi $4, $0, 4
+    s_RST <= '0';
+    s_ALUSrc <= '1';
+    s_add_sub <= '0';
+    s_RT <= "00100"; --register or imm
+    s_RD <= "00100"; --dest register
+    s_RS <= "00000"; --2nd reg
+    s_imm <= x"00000004"; --imm
+    wait for cCLK_PER;
+    -- addi $5, $0, 5
+    s_RST <= '0';
+    s_ALUSrc <= '1';
+    s_add_sub <= '0';
+    s_RT <= "00101"; --register or imm
+    s_RD <= "00101"; --dest register
+    s_RS <= "00000"; --2nd reg
+    s_imm <= x"00000005"; --imm
+    wait for cCLK_PER;
+     -- addi $6, $0, 6
+    s_RST <= '0';
+    s_ALUSrc <= '1';
+    s_add_sub <= '0';
+    s_RT <= "00110"; --register or imm
+    s_RD <= "00110"; --dest register
+    s_RS <= "00000"; --2nd reg
+    s_imm <= x"00000006"; --imm
+    wait for cCLK_PER;
+     -- addi $7, $0, 7
+    s_RST <= '0';
+    s_ALUSrc <= '1';
+    s_add_sub <= '0';
+    s_RT <= "00111"; --register or imm
+    s_RD <= "00111"; --dest register
+    s_RS <= "00000"; --2nd reg
+    s_imm <= x"00000007"; --imm
+    wait for cCLK_PER;
+     -- addi $8, $0, 8
+    s_RST <= '0';
+    s_ALUSrc <= '1';
+    s_add_sub <= '0';
+    s_RT <= "01000"; --register or imm
+    s_RD <= "01000"; --dest register
+    s_RS <= "00000"; --2nd reg
+    s_imm <= x"00000008"; --imm
+    wait for cCLK_PER;
+     -- addi $9, $0, 9
+    s_RST <= '0';
+    s_ALUSrc <= '1';
+    s_add_sub <= '0';
+    s_RT <= "01001"; --register or imm
+    s_RD <= "01001"; --dest register
+    s_RS <= "00000"; --2nd reg
+    s_imm <= x"00000009"; --imm
+    wait for cCLK_PER;
+     -- addi $10, $0, 10
+    s_RST <= '0';
+    s_ALUSrc <= '1';
+    s_add_sub <= '0';
+    s_RT <= "01010"; --register or imm
+    s_RD <= "01010"; --dest register
+    s_RS <= "00000"; --2nd reg
+    s_imm <= x"0000000A"; --imm
+    wait for cCLK_PER;
+     -- add $11, $1, $2
+    s_RST <= '0';
+    s_ALUSrc <= '0';
+    s_add_sub <= '0';
+    s_RT <= "00010"; --register or imm
+    s_RD <= "01011"; --dest register
+    s_RS <= "00001"; --2nd reg
+    s_imm <= x"00000003"; --imm
+    wait for cCLK_PER;
+     -- sub $12, $11, $3
+    s_RST <= '0';
+    s_ALUSrc <= '0';
+    s_add_sub <= '1';
+    s_RT <= "00011"; --register or imm
+    s_RD <= "01100"; --dest register
+    s_RS <= "01011"; --2nd reg
+    s_imm <= x"00000003"; --imm
+    wait for cCLK_PER;
+     -- add $13, $12, $4
+    s_RST <= '0';
+    s_ALUSrc <= '0';
+    s_add_sub <= '0';
+    s_RT <= "00100"; --register or imm
+    s_RD <= "01101"; --dest register
+    s_RS <= "01100"; --2nd reg
+    s_imm <= x"00000003"; --imm
+    wait for cCLK_PER;
+     -- sub $14, $13, $5
+    s_RST <= '0';
+    s_ALUSrc <= '0';
+    s_add_sub <= '1';
+    s_RT <= "00101"; --register or imm
+    s_RD <= "01110"; --dest register
+    s_RS <= "01101"; --2nd reg
+    s_imm <= x"00000003"; --imm
+    wait for cCLK_PER;
+     -- add $15, $14, $6
+    s_RST <= '0';
+    s_ALUSrc <= '0';
+    s_add_sub <= '0';
+    s_RT <= "00110"; --register or imm
+    s_RD <= "01111"; --dest register
+    s_RS <= "01110"; --2nd reg
+    s_imm <= x"00000003"; --imm
+    wait for cCLK_PER;
+     -- sub $16, $15, $7
+    s_RST <= '0';
+    s_ALUSrc <= '0';
+    s_add_sub <= '1';
+    s_RT <= "00111"; --register or imm
+    s_RD <= "10000"; --dest register
+    s_RS <= "01111"; --2nd reg
+    s_imm <= x"00000003"; --imm
+    wait for cCLK_PER;
+     -- add $17, $16, $8
+    s_RST <= '0';
+    s_ALUSrc <= '0';
+    s_add_sub <= '0';
+    s_RT <= "01000"; --register or imm
+    s_RD <= "10001"; --dest register
+    s_RS <= "10000"; --2nd reg
+    s_imm <= x"00000003"; --imm
+    wait for cCLK_PER;
+     -- sub $18, $17, $9
+    s_RST <= '0';
+    s_ALUSrc <= '0';
+    s_add_sub <= '1';
+    s_RT <= "01001"; --register or imm
+    s_RD <= "10010"; --dest register
+    s_RS <= "10001"; --2nd reg
+    s_imm <= x"00000003"; --imm
+    wait for cCLK_PER;
+     -- add $19, $18, $10
+    s_RST <= '0';
+    s_ALUSrc <= '0';
+    s_add_sub <= '0';
+    s_RT <= "01010"; --register or imm
+    s_RD <= "10011"; --dest register
+    s_RS <= "10010"; --2nd reg
+    s_imm <= x"00000003"; --imm
+    wait for cCLK_PER;
+     -- addi $20, $0, -35
+    s_RST <= '0';
+    s_ALUSrc <= '1';
+    s_add_sub <= '0';
+    s_RT <= "10100"; --register or imm
+    s_RD <= "10100"; --dest register
+    s_RS <= "00000"; --2nd reg
+    s_imm <= x"FFFFFFDD"; --imm
+    wait for cCLK_PER;
+     -- add $21, $19, $20
+    s_RST <= '0';
+    s_ALUSrc <= '0';
+    s_add_sub <= '0';
+    s_RT <= "10100"; --register or imm
+    s_RD <= "10101"; --dest register
+    s_RS <= "10011"; --2nd reg
+    s_imm <= x"FFFFFFDD"; --imm
+    wait for cCLK_PER;
+
+    wait;
+  end process;
+  
+end behavior;

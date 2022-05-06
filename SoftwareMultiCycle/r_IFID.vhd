@@ -1,0 +1,40 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity r_IFID is
+  generic(N : integer := 32;
+          gCLK_HPER   : time := 50 ns);
+  port(i_inst       : in std_logic_vector(N-1  downto 0);
+       i_CLK        : in std_logic;
+       i_RST        : in std_logic;
+       i_nextPC	    : in std_logic_vector(N-1 downto 0);
+       o_inst       : out std_logic_vector(N-1  downto 0);
+       o_nextPC     : out std_logic_vector(N-1  downto 0));
+end r_IFID;
+
+architecture behavior of r_IFID is
+
+  component register_n
+    port(i_CLK        : in std_logic;     -- Clock input
+         i_RST        : in std_logic;     -- Reset input
+         i_WE         : in std_logic;     -- Write enable input
+         i_D          : in std_logic_vector(N-1 downto 0);     -- Data value input
+         o_Q          : out std_logic_vector(N-1 downto 0));   -- Data value output
+  end component;
+
+begin
+
+  InstReg: register_n 
+  port map(i_CLK => i_CLK, 
+           i_RST => i_RST,
+           i_WE  => '1',
+           i_D   => i_inst,
+           o_Q   => o_inst);
+  PCReg: register_n 
+  port map(i_CLK => i_CLK, 
+           i_RST => i_RST,
+	   i_WE  => '1',
+           i_D   => i_nextPC,
+           o_Q   => o_nextPC);
+  
+end behavior;

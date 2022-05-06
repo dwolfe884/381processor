@@ -1,0 +1,66 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity tb_bitext is
+  generic(DATA_WIDTH : natural := 32;
+	  ADDR_WIDTH : natural := 10;
+          gCLK_HPER   : time := 25 ns);
+end tb_bitext;
+
+architecture behavior of tb_bitext is
+  
+  -- Calculate the clock period as twice the half-period
+  constant cCLK_PER  : time := gCLK_HPER * 2;
+
+
+  component bitext
+    port(i_in	: in std_logic_vector(15 downto 0);
+	o_O	: out std_logic_vector(31 downto 0)
+	);
+
+  end component;
+
+  -- Temporary signals to connect to the dff component.
+  -- signal s_CLK, s_RST, s_ALUSrc, s_add_sub : std_logic;
+  signal s_CLK : std_logic;
+  signal s_data : std_logic_vector(15 downto 0):= x"0000"; 
+  signal s_out : std_logic_vector(31 downto 0);
+
+begin
+
+  be: bitext 
+  port map(i_in => s_data, 
+           o_O => s_out);
+
+  -- This process sets the clock value (low for gCLK_HPER, then high
+  -- for gCLK_HPER). Absent a "wait" command, processes restart 
+  -- at the beginning once they have reached the final statement.
+  P_CLK: process
+  begin
+    s_CLK <= '0';
+    wait for gCLK_HPER;
+    s_CLK <= '1';
+    wait for gCLK_HPER;
+  end process;
+  
+  -- Testbench process  
+  P_TB: process
+  begin
+-- addi $1, $0, 1
+    s_data <= x"0000";
+    wait for cCLK_PER;
+    s_data <= x"0012";
+    wait for cCLK_PER;
+    s_data <= x"0056";
+    wait for cCLK_PER; 
+    s_data <= x"DEAD";
+    wait for cCLK_PER;
+    s_data <= x"FEAD";
+    wait for cCLK_PER;
+    s_data <= x"FFFF";
+    wait for cCLK_PER;
+
+    wait;
+  end process;
+  
+end behavior;

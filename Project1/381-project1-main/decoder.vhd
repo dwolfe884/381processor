@@ -1,0 +1,97 @@
+-------------------------------------------------------------------------
+-- Joseph Zambreno
+-- Department of Electrical and Computer Engineering
+-- Iowa State University
+-------------------------------------------------------------------------
+
+
+-- dffg.vhd
+-------------------------------------------------------------------------
+-- DESCRIPTION: This file contains an implementation of an edge-triggered
+-- flip-flop with parallel access and reset.
+--
+--
+-- NOTES:
+-- 8/19/16 by JAZ::Design created.
+-- 11/25/19 by H3:Changed name to avoid name conflict with Quartus
+--          primitives.
+-------------------------------------------------------------------------
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity decoder is
+
+  port(i_in          : in std_logic_vector(4 downto 0); 
+       o_0          : out std_logic;
+       o_1          : out std_logic; 
+       o_2          : out std_logic;
+       o_3          : out std_logic;
+       o_4          : out std_logic;
+       o_5          : out std_logic;
+       o_6          : out std_logic;
+       o_7          : out std_logic;
+       o_8          : out std_logic;
+       o_9          : out std_logic;
+       o_10          : out std_logic;
+       o_11          : out std_logic;
+       o_12          : out std_logic;
+       o_13          : out std_logic;
+       o_14          : out std_logic;
+       o_15          : out std_logic;
+       o_16          : out std_logic;
+       o_17          : out std_logic;
+       o_18          : out std_logic;
+       o_19          : out std_logic;
+       o_20          : out std_logic;
+       o_21          : out std_logic;
+       o_22          : out std_logic;
+       o_23          : out std_logic;
+       o_24          : out std_logic;
+       o_25          : out std_logic;
+       o_26          : out std_logic;
+       o_27          : out std_logic;
+       o_28          : out std_logic;
+       o_29          : out std_logic;
+       o_30          : out std_logic;
+       o_31          : out std_logic);
+       
+end decoder;
+
+architecture dataflow of decoder is
+
+begin
+	o_0 <= '1' when (i_in = "00000") else '0';
+	o_1 <= '1' when (i_in = "00001") else '0';
+	o_2 <= '1' when (i_in = "00010") else '0';
+	o_3 <= '1' when (i_in = "00011") else '0';
+	o_4 <= '1' when (i_in = "00100") else '0';
+	o_5 <= '1' when (i_in = "00101") else '0';
+	o_6 <= '1' when (i_in = "00110") else '0';
+	o_7 <= '1' when (i_in = "00111") else '0';
+	o_8 <= '1' when (i_in = "01000") else '0';
+	o_9 <= '1' when (i_in = "01001") else '0';
+	o_10 <= '1' when (i_in = "01010") else '0';
+	o_11 <= '1' when (i_in = "01011") else '0';
+	o_12 <= '1' when (i_in = "01100") else '0';
+	o_13 <= '1' when (i_in = "01101") else '0';
+	o_14 <= '1' when (i_in = "01110") else '0';
+	o_15 <= '1' when (i_in = "01111") else '0';
+	o_16 <= '1' when (i_in = "10000") else '0';
+	o_17 <= '1' when (i_in = "10001") else '0';
+	o_18 <= '1' when (i_in = "10010") else '0';
+	o_19 <= '1' when (i_in = "10011") else '0';
+	o_20 <= '1' when (i_in = "10100") else '0';
+	o_21 <= '1' when (i_in = "10101") else '0';
+	o_22 <= '1' when (i_in = "10110") else '0';
+	o_23 <= '1' when (i_in = "10111") else '0';
+	o_24 <= '1' when (i_in = "11000") else '0';
+	o_25 <= '1' when (i_in = "11001") else '0';
+	o_26 <= '1' when (i_in = "11010") else '0';
+	o_27 <= '1' when (i_in = "11011") else '0';
+	o_28 <= '1' when (i_in = "11100") else '0';
+	o_29 <= '1' when (i_in = "11101") else '0';
+	o_30 <= '1' when (i_in = "11110") else '0';
+	o_31 <= '1' when (i_in = "11111") else '0';
+  
+end dataflow;
